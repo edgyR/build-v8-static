@@ -1,5 +1,6 @@
 FROM ubuntu:bionic
 
+ARG DEBIAN_FRONTEND=noninteractive
 ARG v8_version=8.3.110.13
 ENV version=$v8_version
 
@@ -11,6 +12,14 @@ ENV pkgdir /package
 RUN apt-get update -y && \
 	apt-get upgrade -y && \
 	apt-get install -y curl python git g++ pkg-config libglib2.0-dev 
+
+# make some binaries we'll need later
+# see https://blog.sqreen.com/how-we-built-v8-natively-on-arm/
+ENV SOURCE_DIR=/edgyR/src
+RUN mkdir --parents $SOURCE_DIR
+COPY make-binaries.sh $SOURCE_DIR/
+RUN $SOURCE_DIR/make-binaries.sh > $SOURCE_DIR/make-binaries.log 2>&1
+ENV PATH="/edgyR/src/gn/out:${PATH}"
 
 RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools
 
