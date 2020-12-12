@@ -19,7 +19,7 @@ ENV SOURCE_DIR=/edgyR/src
 RUN mkdir --parents $SOURCE_DIR
 COPY make-binaries.sh $SOURCE_DIR/
 RUN $SOURCE_DIR/make-binaries.sh > $SOURCE_DIR/make-binaries.log 2>&1
-ENV PATH="/edgyR/src/gn/out:${PATH}"
+#ENV PATH="/edgyR/src/gn/out:${PATH}"
 
 RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools
 
@@ -30,9 +30,12 @@ WORKDIR /v8
 RUN gclient sync -D --force --reset && \
 	gclient sync --revision ${version}
 
+# make-binaries.sh made us a 'gn' executable
+RUN cp /edgyR/src/gn/out/gn /v8/buildtools/linux64/
 RUN gn gen ${target} -vv --fail-on-unused-args \
     --args='v8_monolithic=true \
             v8_static_library=true \
+            target_cpu=arm \
             is_clang=false \
             is_asan=false \
             use_gold=false \
