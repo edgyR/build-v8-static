@@ -12,6 +12,9 @@ RUN apt-get update -y && \
 	apt-get upgrade -y && \
 	apt-get install -y curl python git g++ pkg-config libglib2.0-dev 
 
+# gcc cross-compiler
+RUN apt-get install -y g++-aarch64-linux-gnu
+
 RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools
 
 RUN yes | fetch v8
@@ -24,6 +27,8 @@ RUN gclient sync -D --force --reset && \
 RUN gn gen ${target} -vv --fail-on-unused-args \
     --args='v8_monolithic=true \
             v8_static_library=true \
+            target_os="linux" \
+            target_cpu="arm64" \
             is_clang=false \
             is_asan=false \
             use_gold=false \
