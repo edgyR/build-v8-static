@@ -49,3 +49,5 @@ RUN	install -d ${pkgdir}v8 && \
 	install -d ${pkgdir}/v8/lic/ && \
 	install -m644 LICENSE* ${pkgdir}/v8/lic/ && \
 	tar cfJ /v8-${version}-static.tar.xz -C ${pkgdir} v8
+
+RUN find /v8
