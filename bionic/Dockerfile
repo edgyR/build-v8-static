@@ -3,7 +3,7 @@ FROM ubuntu:bionic
 ARG v8_version=8.3.110.13
 ENV version=$v8_version
 
-ENV target arm64.static
+ENV target x86.static
 ENV GYP_GENERATORS ninja
 ENV PATH="/depot_tools:${PATH}"
 ENV pkgdir /package
@@ -11,9 +11,6 @@ ENV pkgdir /package
 RUN apt-get update -y && \
 	apt-get upgrade -y && \
 	apt-get install -y curl python git g++ pkg-config libglib2.0-dev 
-
-# gcc cross-compiler
-RUN apt-get install -y g++-aarch64-linux-gnu
 
 RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools
 
@@ -27,8 +24,6 @@ RUN gclient sync -D --force --reset && \
 RUN gn gen ${target} -vv --fail-on-unused-args \
     --args='v8_monolithic=true \
             v8_static_library=true \
-            target_os="linux" \
-            target_cpu="arm64" \
             is_clang=false \
             is_asan=false \
             use_gold=false \
@@ -54,5 +49,3 @@ RUN	install -d ${pkgdir}v8 && \
 	install -d ${pkgdir}/v8/lic/ && \
 	install -m644 LICENSE* ${pkgdir}/v8/lic/ && \
 	tar cfJ /v8-${version}-static.tar.xz -C ${pkgdir} v8
-
-RUN find /v8
